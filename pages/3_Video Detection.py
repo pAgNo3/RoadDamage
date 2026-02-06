@@ -130,11 +130,14 @@ def processVideo(video_file, score_threshold):
                     Detection(
                         class_id=int(_box.cls[0]),
                         label=CLASSES[int(_box.cls[0])],
+                        
                         score=float(_box.conf[0]),
                         box=_box.xyxy[0].astype(int),
                         )
                         for _box in boxes
                     ]
+                    for detection in detections:
+                        print(detection.label)
 
                 annotated_frame = results[0].plot()
                 _image_pred = cv2.resize(annotated_frame, (_width, _height), interpolation = cv2.INTER_AREA)

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+    <div class="navbar">
+        <div style="font-size: 20px; font-weight: bold;">🚧 RoadGuard AI Dashboard</div>
+        <div>
+            User: <strong>{{ user }}</strong>
+            <a href="/logout" class="logout-link" style="margin-left: 15px">Logout</a>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // 1. Initialize Map
+        var map = L.map('map').setView([28.6139, 77.2090], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 2. RECEIVE DATA FROM FLASK (This is the Magic Link)
+        var roadData = {{ potholes | tojson }};
+
+        // 3. Plot the data
+        roadData.forEach(item => {
+            var color = (item.type === 'Detected') ? '#e74c3c' : '#f39c12'; // Red or Orange
+            
+            L.circleMarker([item.lat, item.lon], {
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.7,
+                radius: 12
+            })
+            .bindPopup(`<b>${item.type}</b><br>${item.desc}`)
+            .addTo(map);
+        });
+    </script>
+</body>
+</html>
